@@ -112,6 +112,7 @@ int solve_quadratic_equation(double a, double b, double c, double * x1, double *
     }
     else
     //
+    //github test
     {
         if (b == 0.0)
         {
