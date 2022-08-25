@@ -5,25 +5,41 @@
 #include <math.h>
 #include <assert.h>
 
-void enter_coefficients_manually(bool * out_check, double * a, double * b, double * c);
-int solve_quadratic_equation(double a, double b, double c, double * x1, double * x2);
-int solve_linear_equation(double b, double c, double * x1, double * x2);
-int solve_quadratic_equasion_without_b_coeff(double a, double c, double * x1, double * x2);
-void result_output(int nRoots, double x1, double x2);
+void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs);
+void solve_quadratic_equation(struct SquareEq * EqParametrs);
+void solve_linear_equation(struct SquareEq * EqParametrs);
+void solve_quadratic_equasion_without_b_coeff(struct SquareEq * EqParametrs);
+void result_output(struct SquareEq * EqParametrs);
 void work_regime_choice(int * working_mode);
 int checking_equality_of_doubles(double a, double b);
+
+
+struct SquareEq
+{
+    int nRoots;
+    double x1;
+    double x2;
+    double a;
+    double b;
+    double c;
+};
+
 
 int main(void)
 {
     int working_mode = 3; // 1 - standart input for coeffs, 2 - file input
 
-    // -INFINITY == no solutions
-    //  INFINITY == inf solutions
-    double x1 = -INFINITY;
-    double x2 = -INFINITY;
-    double a = 0.0;
-    double b = 0.0;
-    double c = 0.0;
+    struct SquareEq EqParametrs =
+    {
+        .nRoots = 0,
+        .x1 = 0.0,
+        .x2 = 0.0,
+        .a = 0.0,
+        .b = 0.0,
+        .c = 0.0,
+    };
+
+
 
     work_regime_choice(&working_mode);
 
@@ -35,15 +51,15 @@ int main(void)
 
         while(!out_check)
         {
-            printf("%d %d %d %d\n>", &out_check == nullptr, &a == nullptr, &b == nullptr, &c == nullptr);
-            enter_coefficients_manually(&out_check, &a, &b, &c);
+            //printf("%d %d %d %d\n>", &out_check == nullptr, &a == nullptr, &b == nullptr, &c == nullptr);
+            enter_coefficients_manually(&out_check, &EqParametrs);
             if (out_check)
             {
                 break;
             }
-            printf("check result: a = %lg, b = %lg, c = %lg.\n", a, b, c);
-            int nRoots = solve_quadratic_equation(a, b, c, &x1, &x2);
-            result_output(nRoots, x1, x2);
+            printf("check result: a = %lg, b = %lg, c = %lg.\n", EqParametrs.a, EqParametrs.b, EqParametrs.c);
+            solve_quadratic_equation(&EqParametrs);
+            result_output(&EqParametrs);
         }
         printf("It was nice to see you here! Come back!\n");
     }
@@ -82,11 +98,10 @@ void work_regime_choice(int * working_mode)
 
 }
 
-void enter_coefficients_manually(bool * out_check, double * a, double * b, double * c)
+void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs)
 {
     //assert(out_check == nullptr or a == nullptr or b == nullptr or c == nullptr);
-    printf("%d %d %d %d\n>", out_check == nullptr, a == nullptr, b == nullptr, c == nullptr);
-    while (scanf("%lg %lg %lg", a, b, c) != 3) //input errors processing
+    while (scanf("%lg %lg %lg", &(EqParametrs->a), &(EqParametrs->b), &(EqParametrs->c)) != 3) //input errors processing
     {
         if (getchar() == 'q') // user wants to finish the programm
         {
@@ -102,143 +117,141 @@ void enter_coefficients_manually(bool * out_check, double * a, double * b, doubl
     }
 }
 
-int solve_quadratic_equation(double a, double b, double c, double * x1, double * x2)
+void solve_quadratic_equation(struct SquareEq * EqParametrs)
 {
     //assert(!x1 || !x2);
 
-    if (checking_equality_of_doubles(a, 0.0))
+    if (checking_equality_of_doubles(EqParametrs->a, 0.0))
     {
-        int nRoots = solve_linear_equation(b, c, x1, x2);
-        return nRoots;
+        solve_linear_equation(EqParametrs);
     }
     else
     //
     //github test
     {
-        if (checking_equality_of_doubles(b, 0.0))
+        if (checking_equality_of_doubles(EqParametrs->b, 0.0))
         {
-            int nRoots = solve_quadratic_equasion_without_b_coeff(a, c, x1, x2);
-            return nRoots;
+            solve_quadratic_equasion_without_b_coeff(EqParametrs);
         }
         else
         {
-            if (checking_equality_of_doubles(c, 0.0))                                                                   //ax^2 + bx = 0
+            if (checking_equality_of_doubles(EqParametrs->c, 0.0))                                                                   //ax^2 + bx = 0
             {
                 double sol1 = 0.0;
-                double sol2 = (-b)/(a);
+                double sol2 = (-(EqParametrs->b))/((EqParametrs->a));
 
                 if (sol1 > sol2)
                 {
-                    *x1 = sol2;
-                    *x2 = sol1;
+                    EqParametrs->x1 = sol2;
+                    EqParametrs->x2 = sol1;
                 }
                 else
                 {
-                    *x1 = sol1;
-                    *x2 = sol2;
+                    EqParametrs->x1 = sol1;
+                    EqParametrs->x2 = sol2;
                 }
-                return 2;
+                EqParametrs->nRoots = 2;
             }
 
             else                                                                         //ax^2 + bx + c = o
             {
-                double dicriminant = (b*b) - 4*(a)*(c);
+                double dicriminant = ((EqParametrs->b)*(EqParametrs->b)) - 4*((EqParametrs->a))*((EqParametrs->c));
 
                 if (dicriminant < 0)
                 {
-                    return 0;
+                    EqParametrs->nRoots = 0;
                 }
 
                 if (checking_equality_of_doubles(dicriminant, 0.0))
                 {
-                    *x1 = (-b)/(2*(a));
-                    return 1;
+                    EqParametrs->x1 = (-(EqParametrs->b))/(2*(EqParametrs->a));
+                    EqParametrs->nRoots = 1;
                 }
 
                 if (dicriminant > 0)
                 {
-                    *x1 = ((-b) - pow(dicriminant, 0.5))/(2*(a));
-                    *x2 = ((-b) + pow(dicriminant, 0.5))/(2*(a));
-                    return 2;
+                    EqParametrs->x1 = ((-(EqParametrs->b)) - pow(dicriminant, 0.5))/(2*(EqParametrs->a));
+                    EqParametrs->x2 = ((-(EqParametrs->b)) + pow(dicriminant, 0.5))/(2*(EqParametrs->a));
+                    EqParametrs->nRoots = 2;
                 }
             }
         }
     }
 }
 
-int solve_linear_equation(double b, double c, double * x1, double * x2)
+void solve_linear_equation(struct SquareEq * EqParametrs)
 {
     //assert(!x1 || !x2);
 
-    if (checking_equality_of_doubles(b, 0.0))
+    if (checking_equality_of_doubles(EqParametrs->b, 0.0))
     {
-        if (checking_equality_of_doubles(c, 0.0))                                                                      //0=0
+        if (checking_equality_of_doubles(EqParametrs->c, 0.0))                                                                      //0=0
         {
-            return -1;
+            EqParametrs->nRoots = -1;
         }
         else                                                                               //0=c
         {
-            return 0;
+            EqParametrs->nRoots = 0;
         }
     }
     else
     {
-        if (checking_equality_of_doubles(c, 0.0))                                                                        //bx = 0
+        if (checking_equality_of_doubles(EqParametrs->c, 0.0))                                                                        //bx = 0
         {
-            *x1 = 0.0;
-            return 1;
+            EqParametrs->x1 = 0.0;
+            EqParametrs->nRoots = 1;
         }
         else                                                                               //bx + c = 0
         {
-            *x1 = (-c)/(b);
-            return 1;
+            EqParametrs->x1 = (-(EqParametrs->c))/(EqParametrs->b);
+            EqParametrs->nRoots = 1;
         }
     }
 }
 
-int solve_quadratic_equasion_without_b_coeff(double a, double c, double * x1, double * x2)
+void solve_quadratic_equasion_without_b_coeff(struct SquareEq * EqParametrs)
 {
     //assert(!x1 || !x2);
 
-    if (checking_equality_of_doubles(c, 0.0))                                                                          //ax^2 = 0
+    if (checking_equality_of_doubles(EqParametrs->c, 0.0))                                                                          //ax^2 = 0
     {
-        *x1 = 0.0;
-        return 1;
+        EqParametrs->x1 = 0.0;
+        EqParametrs->nRoots = 1;
     }
 
     else                                                                                   //ax^2 + c = 0
     {
-        double eq = (-c)/(a);
+        double eq = (-(EqParametrs->c))/(EqParametrs->a);
         if (eq > 0)
         {
-            *x1 = -pow(eq, 0.5);
-            *x2 =  pow(eq, 0.5);
-            return 2;
+            EqParametrs->x1 = -pow(eq, 0.5);
+            EqParametrs->x2 =  pow(eq, 0.5);
+            EqParametrs->nRoots = 2;
         }
         else
         {
-            return 0;
+            EqParametrs->nRoots = 0;
         }
     }
 }
 
-void result_output(int nRoots, double x1, double x2)
+void result_output(struct SquareEq * EqParametrs)
 {
-    if (nRoots == -1)
+    if (EqParametrs->nRoots == -1)
     {
-        printf("The equasion has an infinity of solutions");
+        printf("The equasion has an infinity of solutions\n\n>");
     }
-    if (nRoots == 1)
+    if (EqParametrs->nRoots == 1)
     {
-        printf("The equasion has 1 solution. x = %lf", x1);
+        printf("The equasion has 1 solution. x = %lf\n\n>", EqParametrs->x1);
     }
-    if (nRoots == 2)
+    if (EqParametrs->nRoots == 2)
     {
-        printf("The equasion has 2 solutions. x1 = %lf, x2 = %lf", x1, x2);
+        printf("The equasion has 2 solutions. x1 = %lf, x2 = %lf\n\n>", EqParametrs->x1, EqParametrs->x2);
     }
-    if (nRoots == 0)
+    if (EqParametrs->nRoots == 0)
     {
-        printf("the equasion has 0 solutions");
+        printf("the equasion has 0 solutions\n\n>");
     }
 
 }
