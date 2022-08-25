@@ -3,21 +3,14 @@
 #include <iso646.h>
 #include <math.h>
 #include <assert.h>
+#include "main.h"
 
-void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs);
-void solve_quadratic_equation(struct SquareEq * EqParametrs);
-void solve_linear_equation(struct SquareEq * EqParametrs);
-void solve_quadratic_equasion_without_b_coeff(struct SquareEq * EqParametrs);
-void result_output(struct SquareEq * EqParametrs);
-void work_regime_choice(int * working_mode);
-bool are_equal(double a, double b);
+const double eps = 0.00000001;
 
 enum Roots
 {
     /**
      * @brief has values that nRoots parametr in SquareEq structure can take
-     * 
-     * @see struct SquareEq
      */
     ZERO_ROOTS,
     ONE_ROOT,
@@ -29,16 +22,8 @@ struct SquareEq
 {
     /**
      * @brief structure contains all information about square equasion
-     * 
-     * @param nRoots contains information about number of roots of equasion
-     * @param x1     contains information about the first root of equasion
-     * @param x2     contains information about the first root of equasion
-     * @param a      contains information about the a-coefficient of equasion
-     * @param b      contains information about the a-coefficient of equasion
-     * @param c      contains information about the c-coefficient of equasion
-     * 
      */
-    enum Roots nRoots;
+    Roots nRoots;
     double x1;
     double x2;
     double a;
@@ -49,37 +34,13 @@ struct SquareEq
 
 int main(void)
 {
-    /**
-     * @brief starts the program
-     * 
-     * Links to choice of working mode, entering coefficients, solving the equasion and output
-     * 
-     * @param working_mode takes information about regime of work
-     * @param out_check helps to stop the programm if users enters 'q' in manual input
-     * 
-     * @see struct SquareEq
-     * @see work_regime_choice()
-     * @see enter_coefficients_manually()
-     * @see solve_quadratic_equation()
-     * @see result_output()
-     */
-    int working_mode = 3; // 1 - standart input for coeffs, 2 - file input
+    int working_mode = 3; // 1 - standart input for coeffs, 2 - file input, gets value in work_regime_choice()
 
     struct SquareEq EqParametrs;
-    /*
-    struct SquareEq EqParametrs =
-    {
-        .x1 = 0.0,
-        .x2 = 0.0,
-        .a = 0.0,
-        .b = 0.0,
-        .c = 0.0,
-    };
-    */
 
     work_regime_choice(&working_mode);
 
-    if (working_mode == 1)
+    if (working_mode == 1) // handle input of coefficients
     {
         bool out_check = false; //checks if a user wants to finish and enters 'q'
         printf("\nOk, let's do it! Just enter coefficients through a space, also write down zeros, 3 numbers in common.\n"
@@ -99,7 +60,7 @@ int main(void)
         printf("It was nice to see you here! Come back!\n");
     }
 
-    else
+    else // UNIT TEST
     {
         // Here should be file_input function call.
     }
@@ -111,17 +72,6 @@ int main(void)
 
 void work_regime_choice(int * working_mode)
 {
-    /**
-     * @brief function to choose the working mode
-     * 
-     * Takes 1 or 2 in handle input and chooses regime of work
-     * 
-     * @param *working_mode gets the type of work from the user, 1 is manual input, 2 is file input
-     * @param status is a helping var to check the unsuccessfull input
-     * 
-     * @see main()
-     * 
-     */
     assert(working_mode != nullptr);
 
     int status = 0; //varieble shows the result of scanf, 1 == success
@@ -145,21 +95,9 @@ void work_regime_choice(int * working_mode)
     }
 
 }
-//doxygen
+
 void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs)
 {
-    /**
-     * @brief function to get coefficients by manual input
-     * 
-     * Gets three numbers and write them to the parametrs of the equasion
-     * 
-     * @param out_check checks if a user enters 'q' and finish entering after that
-     * @param EqParametrs has all parametrs of current equasion
-     * 
-     * @see main()
-     * @see struct SquareEq
-     * 
-     */
     assert(EqParametrs != nullptr);
 
     while (scanf("%lg %lg %lg", &(EqParametrs->a), &(EqParametrs->b), &(EqParametrs->c)) != 3) //input errors processing
@@ -180,21 +118,6 @@ void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs
 
 void solve_quadratic_equation(struct SquareEq * EqParametrs)
 {
-    /**
-     * @brief function to solve quadratic equasion
-     * 
-     * Function calls function of linear equasion solving if a == 0 and solves quadratic equasion
-     * if a != 0 with help of discriminant
-     * 
-     * @param EqParametrs has all parametrs of current equasion
-     * @param dicriminant has a value of discriminant of quadratic equasion
-     * @param sqrt_discriminant has a value of sqrt of discriminant of quadratic equasion
-     * 
-     * @see main()
-     * @see solve_linear_equation()
-     * @see struct SquareEq
-     * 
-     */
     assert(EqParametrs != nullptr);
 
     if (are_equal(EqParametrs->a, 0.0))
@@ -229,17 +152,6 @@ void solve_quadratic_equation(struct SquareEq * EqParametrs)
 
 void solve_linear_equation(struct SquareEq * EqParametrs)
 {
-    /**
-     * @brief function solves linear equasion
-     * 
-     * Is called from solve_quadratic_equasion if a-coeff == 0
-     * 
-     * @param EqParametrs has all parametrs of current equasion
-     * 
-     * @see solve_quadratic_equation()
-     * @see struct SquareEq
-     * 
-     */
     assert(EqParametrs != nullptr);
 
     if (are_equal(EqParametrs->b, 0.0))
@@ -260,17 +172,8 @@ void solve_linear_equation(struct SquareEq * EqParametrs)
 
 void result_output(struct SquareEq * EqParametrs)
 {
-    /**
-     * @brief puts the resulf of solving the quadratic equasion after manual input
-     * 
-     * @param EqParametrs has all parametrs of current equasion
-     * 
-     * @see main()
-     * 
-     * @see struct SquareEq
-     */
     assert(EqParametrs != nullptr);
-    assert(isfinite(EqParametrs->x1) or isfinite(EqParametrs->x2));
+    assert(isfinite(EqParametrs->x1) && isfinite(EqParametrs->x2));
 
     if (are_equal(EqParametrs->x1, 0.0)) EqParametrs->x1 = 0.0;
     if (are_equal(EqParametrs->x2, 0.0)) EqParametrs->x2 = 0.0;
@@ -290,48 +193,10 @@ void result_output(struct SquareEq * EqParametrs)
         printf("The equasion has an infinity of solutions\n\n>");
         break;
     }
-    /*
-    if (EqParametrs->nRoots == -1)
-    {
-        printf("The equasion has an infinity of solutions\n\n>");
-    }
-    if (EqParametrs->nRoots == 1)
-    {
-        printf("The equasion has 1 solution. x = %lg\n\n>", EqParametrs->x1);
-    }
-    if (EqParametrs->nRoots == 2)
-    {
-        printf("The equasion has 2 solutions. x1 = %lg, x2 = %lg\n\n>", EqParametrs->x1, EqParametrs->x2);
-    }
-    if (EqParametrs->nRoots == 0)
-    {
-        printf("the equasion has 0 solutions\n\n>");
-    }
-    */
-
 }
 
 bool are_equal(double a, double b)
 {
-    /**
-     * @brief function checks an approximate equality of double numbers
-     * 
-     * @param a is the first number
-     * @param b is the second number
-     * 
-     */
-    return (fabs(a - b) <= 0.000000000000001);
+    return (fabs(a - b) <= eps);
 }
 
-//k&r codestyle
-
-
-/*
-early return pattern.
-  f():
-    if
-    if
-    if
-
-    ....
-*/
