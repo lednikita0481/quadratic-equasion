@@ -11,6 +11,7 @@ int solve_linear_equation(double b, double c, double * x1, double * x2);
 int solve_quadratic_equasion_without_b_coeff(double a, double c, double * x1, double * x2);
 void result_output(int nRoots, double x1, double x2);
 void work_regime_choice(int * working_mode);
+int checking_equality_of_doubles(double a, double b);
 
 int main(void)
 {
@@ -83,7 +84,7 @@ void work_regime_choice(int * working_mode)
 
 void enter_coefficients_manually(bool * out_check, double * a, double * b, double * c)
 {
-    assert(out_check == nullptr or a == nullptr or b == nullptr or c == nullptr);
+    //assert(out_check == nullptr or a == nullptr or b == nullptr or c == nullptr);
     printf("%d %d %d %d\n>", out_check == nullptr, a == nullptr, b == nullptr, c == nullptr);
     while (scanf("%lg %lg %lg", a, b, c) != 3) //input errors processing
     {
@@ -105,7 +106,7 @@ int solve_quadratic_equation(double a, double b, double c, double * x1, double *
 {
     //assert(!x1 || !x2);
 
-    if (a == 0.0)
+    if (checking_equality_of_doubles(a, 0.0))
     {
         int nRoots = solve_linear_equation(b, c, x1, x2);
         return nRoots;
@@ -114,14 +115,14 @@ int solve_quadratic_equation(double a, double b, double c, double * x1, double *
     //
     //github test
     {
-        if (b == 0.0)
+        if (checking_equality_of_doubles(b, 0.0))
         {
             int nRoots = solve_quadratic_equasion_without_b_coeff(a, c, x1, x2);
             return nRoots;
         }
         else
         {
-            if (c == 0)                                                                   //ax^2 + bx = 0
+            if (checking_equality_of_doubles(c, 0.0))                                                                   //ax^2 + bx = 0
             {
                 double sol1 = 0.0;
                 double sol2 = (-b)/(a);
@@ -148,7 +149,7 @@ int solve_quadratic_equation(double a, double b, double c, double * x1, double *
                     return 0;
                 }
 
-                if (dicriminant == 0.0)
+                if (checking_equality_of_doubles(dicriminant, 0.0))
                 {
                     *x1 = (-b)/(2*(a));
                     return 1;
@@ -169,11 +170,11 @@ int solve_linear_equation(double b, double c, double * x1, double * x2)
 {
     //assert(!x1 || !x2);
 
-    if (b == 0.0)
+    if (checking_equality_of_doubles(b, 0.0))
     {
-        if (c == 0.0)                                                                      //0=0
+        if (checking_equality_of_doubles(c, 0.0))                                                                      //0=0
         {
-            return INFINITY;
+            return -1;
         }
         else                                                                               //0=c
         {
@@ -182,7 +183,7 @@ int solve_linear_equation(double b, double c, double * x1, double * x2)
     }
     else
     {
-        if (c == 0)                                                                        //bx = 0
+        if (checking_equality_of_doubles(c, 0.0))                                                                        //bx = 0
         {
             *x1 = 0.0;
             return 1;
@@ -199,7 +200,7 @@ int solve_quadratic_equasion_without_b_coeff(double a, double c, double * x1, do
 {
     //assert(!x1 || !x2);
 
-    if (c == 0.0)                                                                          //ax^2 = 0
+    if (checking_equality_of_doubles(c, 0.0))                                                                          //ax^2 = 0
     {
         *x1 = 0.0;
         return 1;
@@ -223,7 +224,7 @@ int solve_quadratic_equasion_without_b_coeff(double a, double c, double * x1, do
 
 void result_output(int nRoots, double x1, double x2)
 {
-    if (nRoots == INFINITY)
+    if (nRoots == -1)
     {
         printf("The equasion has an infinity of solutions");
     }
@@ -240,6 +241,12 @@ void result_output(int nRoots, double x1, double x2)
         printf("the equasion has 0 solutions");
     }
 
+}
+
+int checking_equality_of_doubles(double a, double b)
+{
+    if (fabs(a - b) <= 0.0000001) return 1;
+    return 0;
 }
 
 //k&r codestyle
