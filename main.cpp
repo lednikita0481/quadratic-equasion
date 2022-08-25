@@ -111,6 +111,7 @@ int solve_quadratic_equation(double a, double b, double c, double * x1, double *
         return nRoots;
     }
     else
+    //
     {
         if (b == 0.0)
         {
