@@ -61,3 +61,7 @@ void work_regime_choice(int * working_mode);
  * 
 */
 bool are_equal(double a, double b);
+
+void Unit_Test(struct SquareEq * EqParametrs);
+
+void Checks_values(int i, struct SquareEq * EqParametrs, int Expected_nRoots, double Expected_x1, double Expected_x2);
