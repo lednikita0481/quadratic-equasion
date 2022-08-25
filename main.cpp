@@ -12,6 +12,18 @@ void result_output(struct SquareEq * EqParametrs);
 void work_regime_choice(int * working_mode);
 bool are_equal(double a, double b);
 
+enum Roots
+{
+    /**
+     * @brief has values that nRoots parametr in SquareEq structure can take
+     * 
+     * @see struct SquareEq
+     */
+    ZERO_ROOTS,
+    ONE_ROOT,
+    TWO_ROOTS,
+    INF_ROOTS
+};
 
 struct SquareEq
 {
@@ -26,7 +38,7 @@ struct SquareEq
      * @param c      contains information about the c-coefficient of equasion
      * 
      */
-    int nRoots;
+    enum Roots nRoots;
     double x1;
     double x2;
     double a;
@@ -53,15 +65,17 @@ int main(void)
      */
     int working_mode = 3; // 1 - standart input for coeffs, 2 - file input
 
+    struct SquareEq EqParametrs;
+    /*
     struct SquareEq EqParametrs =
     {
-        .nRoots = 0,
         .x1 = 0.0,
         .x2 = 0.0,
         .a = 0.0,
         .b = 0.0,
         .c = 0.0,
     };
+    */
 
     work_regime_choice(&working_mode);
 
@@ -193,14 +207,14 @@ void solve_quadratic_equation(struct SquareEq * EqParametrs)
 
     if (dicriminant < 0)
     {
-        EqParametrs->nRoots = 0;
+        EqParametrs->nRoots = ZERO_ROOTS;
     }
 
     if (are_equal(dicriminant, 0.0))
     {
         EqParametrs->x1 = (-(EqParametrs->b))/(2*(EqParametrs->a));
         if (are_equal(EqParametrs->x1, 0.0)) EqParametrs->x1 = 0.0;
-        EqParametrs->nRoots = 1;
+        EqParametrs->nRoots = ONE_ROOT;
     }
 
     if (dicriminant > 0)
@@ -208,7 +222,7 @@ void solve_quadratic_equation(struct SquareEq * EqParametrs)
         double sqrt_discriminant = sqrt(dicriminant);
         EqParametrs->x1 = ((-(EqParametrs->b)) - sqrt_discriminant)/(2*(EqParametrs->a));
         EqParametrs->x2 = ((-(EqParametrs->b)) + sqrt_discriminant)/(2*(EqParametrs->a));
-        EqParametrs->nRoots = 2;
+        EqParametrs->nRoots = TWO_ROOTS;
     }
 }
 
@@ -232,16 +246,16 @@ void solve_linear_equation(struct SquareEq * EqParametrs)
     {
         if (are_equal(EqParametrs->c, 0.0))                                                                      
         {
-            EqParametrs->nRoots = -1;
+            EqParametrs->nRoots = INF_ROOTS;
             return;
         }
                                                                               
-        EqParametrs->nRoots = 0;
+        EqParametrs->nRoots = ZERO_ROOTS;
         return;
     }
 
     EqParametrs->x1 = (-(EqParametrs->c))/(EqParametrs->b);
-    EqParametrs->nRoots = 1;
+    EqParametrs->nRoots = ONE_ROOT;
 }
 
 void result_output(struct SquareEq * EqParametrs)
@@ -261,6 +275,22 @@ void result_output(struct SquareEq * EqParametrs)
     if (are_equal(EqParametrs->x1, 0.0)) EqParametrs->x1 = 0.0;
     if (are_equal(EqParametrs->x2, 0.0)) EqParametrs->x2 = 0.0;
 
+    switch (EqParametrs->nRoots)
+    {
+    case ZERO_ROOTS:
+        printf("the equasion has 0 solutions\n\n>");
+        break;
+    case ONE_ROOT:
+        printf("The equasion has 1 solution. x = %lg\n\n>", EqParametrs->x1);
+        break;
+    case TWO_ROOTS:
+        printf("The equasion has 2 solutions. x1 = %lg, x2 = %lg\n\n>", EqParametrs->x1, EqParametrs->x2);
+        break;
+    case INF_ROOTS:
+        printf("The equasion has an infinity of solutions\n\n>");
+        break;
+    }
+    /*
     if (EqParametrs->nRoots == -1)
     {
         printf("The equasion has an infinity of solutions\n\n>");
@@ -277,6 +307,7 @@ void result_output(struct SquareEq * EqParametrs)
     {
         printf("the equasion has 0 solutions\n\n>");
     }
+    */
 
 }
 
