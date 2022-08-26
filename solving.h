@@ -1,3 +1,5 @@
+#define TESTS_AMOUNT 11
+
 enum Working_Mode
 {
     /**
@@ -15,20 +17,29 @@ enum Working_Mode
     NON_INPUT
 };
 
-/**
- * @brief function to get coefficients by manual input
- *
- * Gets three numbers and write them to the parametrs of the equasion
- *
- * @param out_check checks if a user enters 'q' and finish entering after that
- * @param EqParametrs has all parametrs of current equasion
- *
- * @see struct SquareEq
- *
-*/
+enum Roots
+{
+    /**
+     * @brief has values that nRoots parametr in SquareEq structure can take
+     */
+    ZERO_ROOTS,
+    ONE_ROOT,
+    TWO_ROOTS,
+    INF_ROOTS
+};
 
-
-void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs);
+struct SquareEq
+{
+    /**
+     * @brief structure contains all information about square equasion
+     */
+    Roots nRoots;
+    double x1;
+    double x2;
+    double a;
+    double b;
+    double c;
+};
 
 /**
  * @brief function to solve quadratic equasion
@@ -55,15 +66,6 @@ void solve_quadratic_equation(struct SquareEq * EqParametrs);
 void solve_linear_equation(struct SquareEq * EqParametrs);
 
 /**
- * @brief puts the resulf of solving the quadratic equasion after manual input
- *
- * @param EqParametrs has all parametrs of current equasion
- *
- * @see struct SquareEq
-*/
-void result_output(struct SquareEq * EqParametrs);
-
-/**
  * @brief function to choose the working mode
  *
  * Takes 1 or 2 in handle input and chooses regime of work
@@ -72,14 +74,29 @@ void result_output(struct SquareEq * EqParametrs);
 */
 void work_regime_choice(enum Working_Mode * working_mode);
 
+
 /**
- * @brief function checks an approximate equality of double numbers
+ * @brief function to get coefficients by manual input
  *
- * @param a is the first number
- * @param b is the second number
+ * Gets three numbers and write them to the parametrs of the equasion
+ *
+ * @param out_check checks if a user enters 'q' and finish entering after that
+ * @param EqParametrs has all parametrs of current equasion
+ *
+ * @see struct SquareEq
  *
 */
-bool are_equal(double a, double b);
+void enter_coefficients_manually(bool * out_check, struct SquareEq * EqParametrs);
+
+
+/**
+ * @brief puts the resulf of solving the quadratic equasion after manual input
+ *
+ * @param EqParametrs has all parametrs of current equasion
+ *
+ * @see struct SquareEq
+*/
+void manual_result_output(struct SquareEq * EqParametrs);
 
 
 /**
@@ -98,6 +115,20 @@ void Unit_Test(struct SquareEq * EqParametrs);
 
 
 /**
+ * @brief Checks the algoritm of quadratic equasion solving with file input
+ * 
+ * Opens the file "file input.txt" and reads coefficients and expected values untill the first unseccessfull reading
+ * Calls the function of quadratic equasion solving 
+ * after that calls the function of comparison of received and expected values.
+ * 
+ * @param EqParametrs has all parametrs of current equasion
+ * 
+ * @see struct SquareEq
+ */
+void File_Input(struct SquareEq * EqParametrs);
+
+
+/**
  * @brief Compares received answers with expected
  * 
  * @param i shows number of test
@@ -112,17 +143,14 @@ void Checks_values(int i, struct SquareEq * EqParametrs, int Expected_nRoots, do
 
 
 /**
- * @brief Checks the algoritm of quadratic equasion solving with file input
- * 
- * Opens the file "file input.txt" and reads coefficients and expected values untill the first unseccessfull reading
- * Calls the function of quadratic equasion solving 
- * after that calls the function of comparison of received and expected values.
- * 
- * @param EqParametrs has all parametrs of current equasion
- * 
- * @see struct SquareEq
- */
-void File_Input(struct SquareEq * EqParametrs);
+ * @brief function checks an approximate equality of double numbers
+ *
+ * @param a is the first number
+ * @param b is the second number
+ *
+*/
+bool are_equal(double a, double b);
+
 
 /**
  * @brief Cleans the buffer after enter
